@@ -172,7 +172,7 @@
 - (USArrayWrapper *(^)(UnderscoreArrayIteratorBlock))each;
 {
     return ^USArrayWrapper *(UnderscoreArrayIteratorBlock block) {
-        // DISPATCH_QUEUE_CONCURRENT only works on OS X >= 10.7
+        // DISPATCH_QUEUE_CONCURRENT only works on OS X >= 10.7 / iOS 5
         dispatch_queue_t result_queue = dispatch_queue_create(NULL, DISPATCH_QUEUE_CONCURRENT);
 
         dispatch_apply(self.array.count, result_queue, ^(size_t i) {
@@ -188,7 +188,7 @@
 - (USArrayWrapper *(^)(UnderscoreArrayMapBlock))map;
 {
     return ^USArrayWrapper *(UnderscoreArrayMapBlock block) {
-        NSMutableArray *result = [NSMutableArray arrayWithCapacity:self.array.count];
+        __block NSMutableArray *result = [NSMutableArray arrayWithCapacity:self.array.count];
         dispatch_queue_t result_queue = dispatch_queue_create(NULL, NULL);
 
         dispatch_apply(self.array.count, result_queue, ^(size_t i) {

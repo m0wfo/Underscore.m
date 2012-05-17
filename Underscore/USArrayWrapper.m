@@ -172,9 +172,15 @@
 - (USArrayWrapper *(^)(UnderscoreArrayIteratorBlock))each;
 {
     return ^USArrayWrapper *(UnderscoreArrayIteratorBlock block) {
-        for (id obj in self.array) {
-            block(obj);
-        }
+        // DISPATCH_QUEUE_CONCURRENT only works on OS X >= 10.7
+        dispatch_queue_t result_queue = dispatch_queue_create(NULL, DISPATCH_QUEUE_CONCURRENT);
+
+        dispatch_apply(self.array.count, result_queue, ^(size_t i) {
+            
+        });
+
+
+        dispatch_release(result_queue);
 
         return self;
     };
@@ -184,14 +190,13 @@
 {
     return ^USArrayWrapper *(UnderscoreArrayMapBlock block) {
         NSMutableArray *result = [NSMutableArray arrayWithCapacity:self.array.count];
+        dispatch_queue_t result_queue = dispatch_queue_create(NULL, NULL);
 
-        for (id obj in self.array) {
-            id mapped = block(obj);
+        dispatch_apply(self.array.count, result_queue, ^(size_t i) {
+            block([self.array objectAtIndex:i]);
+        });
 
-            if (mapped) {
-                [result addObject:mapped];
-            }
-        }
+        dispatch_release(result_queue);
 
         return [[USArrayWrapper alloc] initWithArray:result];
     };

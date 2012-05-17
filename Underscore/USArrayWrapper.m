@@ -176,9 +176,8 @@
         dispatch_queue_t result_queue = dispatch_queue_create(NULL, DISPATCH_QUEUE_CONCURRENT);
 
         dispatch_apply(self.array.count, result_queue, ^(size_t i) {
-            
+            block([self.array objectAtIndex:i]);
         });
-
 
         dispatch_release(result_queue);
 
@@ -193,7 +192,7 @@
         dispatch_queue_t result_queue = dispatch_queue_create(NULL, NULL);
 
         dispatch_apply(self.array.count, result_queue, ^(size_t i) {
-            block([self.array objectAtIndex:i]);
+            [result addObject:block(i, [self.array objectAtIndex:i])];
         });
 
         dispatch_release(result_queue);
